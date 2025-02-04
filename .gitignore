@@ -1,0 +1,7 @@
+.gitignore
+.idea/
+esp-idf/
+cmake-build-espidf/
+/Users/kreppid/esp/esp-idf/
+sdkconfig
+sdkconfig.ci
