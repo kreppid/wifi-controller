@@ -8,34 +8,31 @@ uart_config_t uart_config() {
         .stop_bits = UART_STOP_BITS_1,
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
         .source_clk = UART_SCLK_DEFAULT
+
     };
 }
 
-void uart_init(QueueHandle_t *queue) {
-    uart_config_t config = uart_config();
+void uart_init() {
+    const uart_config_t config = uart_config();
 
-    const uart_port_t uart_recv = UART_NUM_1;
-    const uart_port_t uart_send = UART_NUM_2;
+    // Configure uart1
+    const uart_port_t uart1 = UART_NUM_1;
 
-    size_t buff_size = DEF_BUFF_SIZE * 2;
+    const size_t buff_size = 2 * DEF_BUFF_SIZE;
 
-    ESP_ERROR_CHECK(uart_set_pin(uart_recv, 0,0,0,0));
-    ESP_ERROR_CHECK(uart_set_pin(uart_send, 0,0,0,0));
+    ESP_ERROR_CHECK(uart_param_config(uart1, &config));
 
-    // TODO добавить общую очередь для двух uart (QueueHandle_t??)
-    ESP_ERROR_CHECK(uart_driver_install(uart_recv, buff_size, 0, 0, queue, 0));
+    // TODO изменить пины
+    ESP_ERROR_CHECK(uart_set_pin(uart1, UART_PIN_NO_CHANGE,UART_PIN_NO_CHANGE,UART_PIN_NO_CHANGE,UART_PIN_NO_CHANGE));
 
+    ESP_ERROR_CHECK(uart_driver_install(uart1, buff_size, buff_size, 0, NULL, 0));
 
-}
+    // Configure uart0 (debug)
+    const uart_port_t uart_debug = UART_NUM_0;
 
-[[noreturn]] void uart_recv_task() {
-    while (true) {
+    ESP_ERROR_CHECK(uart_param_config(uart_debug, &config));
 
-    }
-}
+    ESP_ERROR_CHECK(uart_set_pin(uart_debug, UART_PIN_NO_CHANGE,UART_PIN_NO_CHANGE,UART_PIN_NO_CHANGE,UART_PIN_NO_CHANGE));
 
-[[noreturn]] void uart_send_task() {
-    while (true) {
-
-    }
+    ESP_ERROR_CHECK(uart_driver_install(uart_debug, buff_size, buff_size, 0, NULL, 0));
 }
